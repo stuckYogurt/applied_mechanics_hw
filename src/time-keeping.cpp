@@ -1,5 +1,5 @@
 #include "../include/time-keeping.h++"
-#include "cmath"
+
 
 using namespace TimeKeeping;
 template<TimeScale Scale>
@@ -54,7 +54,7 @@ template<typename DutContainer>
 template<TimeScale To, TimeScale From>
 Time<To> TimeConverter<DutContainer>::convert(const Time<From> &from) const {
 
-    double jd1 = static_cast<double>(from.jdInt());
+    auto jd1 = static_cast<double>(from.jdInt());
     double jd2 = from.jdFrac();
 
     if constexpr (To == From) {
@@ -142,4 +142,38 @@ Time<To> TimeConverter<DutContainer>::convert(const Time<From> &from) const {
         auto tt_time = this->template convert<TimeScale::TT, From>(from);
         return this->template convert<To, TimeScale::TT>(tt_time);
     }
+}
+
+// returns in days fraction
+template<TimeScale Scale>
+double operator-(const Time<Scale>& l, const Time<Scale>& r) noexcept {
+    return (l.jdInt() - r.jdInt()) + (l.jdFrac() - r.jdFrac());
+}
+
+template<TimeScale Scale>
+Time<Scale> operator+(double secs, const Time<Scale>& l) noexcept {
+    double intDays;
+    double fracDays = std::modf(secs / 86400.0, &intDays);
+
+    double newFrac = l.jdFrac() + fracDays;
+
+    if (newFrac >= 1.0) {
+        newFrac -= 1.0;
+        intDays += 1.0;
+    } else if (newFrac < 0.0) {
+        newFrac += 1.0;
+        intDays -= 1.0;
+    }
+
+    return Time<Scale>(l.jdInt() + intDays, newFrac);
+}
+
+template<TimeScale Scale>
+Time<Scale> operator+(const Time<Scale>& l, double secs) noexcept {
+    return secs + l;
+}
+
+template<TimeScale Scale>
+Time<Scale> operator-(const Time<Scale>& l, double secs) noexcept {
+    return -secs + l;
 }
