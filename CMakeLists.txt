@@ -5,8 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 include(ExternalProject)
 
 
-add_executable(applied_mechs main.cpp
-        src/time-keeping.cpp)
+add_executable(applied_mechs main.cpp)
 
 set(SOFA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/sofa/include")
 set(SOFA_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/sofa/src")

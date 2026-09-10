@@ -2,7 +2,8 @@
 #ifndef APPLIED_MECHS_TIME_KEEPING_H
 #define APPLIED_MECHS_TIME_KEEPING_H
 
-#include "vector"
+#include "ostream"
+#include <string>
 
 namespace TimeKeeping {
     enum class TimeScale {
@@ -37,6 +38,10 @@ namespace TimeKeeping {
 
         [[nodiscard]] double mjd() const noexcept;
 
+        [[nodiscard]] std::string toString() const noexcept;
+
+
+
         auto operator<=>(const Time &rhs) const noexcept = default;
 
     };
@@ -54,6 +59,25 @@ namespace TimeKeeping {
     };
 
 
+
+
 }
+
+template<TimeKeeping::TimeScale Scale>
+double operator-(const TimeKeeping::Time<Scale>& l, const TimeKeeping::Time<Scale>& r) noexcept;
+
+template<TimeKeeping::TimeScale Scale>
+TimeKeeping::Time<Scale> operator+(double secs, const TimeKeeping::Time<Scale>& r) noexcept;
+
+template<TimeKeeping::TimeScale Scale>
+TimeKeeping::Time<Scale> operator+(const TimeKeeping::Time<Scale>& l, double secs) noexcept;
+
+template<TimeKeeping::TimeScale Scale>
+TimeKeeping::Time<Scale> operator-(const TimeKeeping::Time<Scale>& l, double secs) noexcept;
+
+template<TimeKeeping::TimeScale Scale>
+std::ostream& operator<<(std::ostream& os, const TimeKeeping::Time<Scale>& time) noexcept;
+
+#include "time-keeping.tpp"
 
 #endif //APPLIED_MECHS_TIME_KEEPING_H

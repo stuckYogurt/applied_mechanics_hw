@@ -1,5 +1,5 @@
-#include "../include/time-keeping.h++"
-
+#include "time-keeping.h++"
+#include <string>
 
 using namespace TimeKeeping;
 template<TimeScale Scale>
@@ -14,24 +14,24 @@ Time<Scale> Time<Scale>::fromMJD(double mjd) noexcept {
 }
 
 template<TimeScale Scale>
-Time<Scale> Time<Scale>::fromCalendar(int year, int month, int day, int hour, int minute, double second) {
+Time<Scale> Time<Scale>::fromCalendar(int year, int month, int day,
+                                      int hour, int minute, double second) {
     if (month <= 2) {
         year--;
         month += 12;
     }
 
-    // Gregorian adjustment
-    double A = (int)(year / 100.0);
-    double B = 2.0 - A + (int)(A / 4.0);
+    double A = std::floor(year / 100.0);
+    double B = 2.0 - A + std::floor(A / 4.0);
 
-    double jd = (int)(365.25 * (year + 4716)) +
-                (int)(30.6001 * (month + 1)) +
-                day + B - 1524.5;
+    double jd = std::floor(365.25 * (year + 4716))
+              + std::floor(30.6001 * (month + 1))
+              + day + B - 1524.5;
 
     double dayFraction = (hour + minute / 60.0 + second / 3600.0) / 24.0;
     jd += dayFraction;
 
-    return fromJD(jd);
+    return Time<Scale>::fromJD(jd);
 }
 
 
@@ -151,11 +151,11 @@ double operator-(const Time<Scale>& l, const Time<Scale>& r) noexcept {
 }
 
 template<TimeScale Scale>
-Time<Scale> operator+(double secs, const Time<Scale>& l) noexcept {
+Time<Scale> operator+(double secs, const Time<Scale>& r) noexcept {
     double intDays;
     double fracDays = std::modf(secs / 86400.0, &intDays);
 
-    double newFrac = l.jdFrac() + fracDays;
+    double newFrac = r.jdFrac() + fracDays;
 
     if (newFrac >= 1.0) {
         newFrac -= 1.0;
@@ -165,7 +165,7 @@ Time<Scale> operator+(double secs, const Time<Scale>& l) noexcept {
         intDays -= 1.0;
     }
 
-    return Time<Scale>(l.jdInt() + intDays, newFrac);
+    return Time<Scale>(r.jdInt() + intDays, newFrac);
 }
 
 template<TimeScale Scale>
@@ -176,4 +176,14 @@ Time<Scale> operator+(const Time<Scale>& l, double secs) noexcept {
 template<TimeScale Scale>
 Time<Scale> operator-(const Time<Scale>& l, double secs) noexcept {
     return -secs + l;
+}
+
+template<TimeKeeping::TimeScale Scale>
+std::ostream& operator<<(std::ostream& os, const TimeKeeping::Time<Scale>& time) noexcept {
+    return os << time.toString();
+}
+
+template<TimeKeeping::TimeScale Scale>
+std::string TimeKeeping::Time<Scale>::toString() const noexcept {
+    return std::to_string(jdInt()) + "d-" + std::to_string(jdFrac());
 }
