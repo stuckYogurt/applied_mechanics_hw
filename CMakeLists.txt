@@ -8,10 +8,12 @@ include(ExternalProject)
 add_executable(applied_mechs main.cpp)
 
 set(SOFA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/sofa/include")
-set(SOFA_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/sofa/src")
+set(SOFA_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/sofa/bin")
 
 add_library(sofa STATIC IMPORTED)
 set_target_properties(sofa PROPERTIES
-        IMPORTED_LOCATION "${LIB_INSTALL_DIR}/libsofa_c.a"
-        INTERFACE_INCLUDE_DIRECTORIES "${LIB_INCLUDE_DIR}"
+        IMPORTED_LOCATION "${SOFA_INSTALL_DIR}/libsofa_c.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${SOFA_INCLUDE_DIR}"
 )
+
+target_link_libraries(applied_mechs PUBLIC sofa)

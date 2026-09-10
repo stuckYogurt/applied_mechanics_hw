@@ -10,6 +10,15 @@ namespace TimeKeeping {
         TAI, UTC, UT1, TT, TCG, TCB, TDB
     };
 
+    struct CalendarDate {
+        int year;
+        int month;
+        int day;
+        int hour;
+        int min;
+        double sec;
+    };
+
     template<TimeScale Scale>
     class Time {
         double jdInt_;
@@ -40,7 +49,7 @@ namespace TimeKeeping {
 
         [[nodiscard]] std::string toString() const noexcept;
 
-
+        [[nodiscard]] CalendarDate toCalendar() const;
 
         auto operator<=>(const Time &rhs) const noexcept = default;
 
@@ -77,6 +86,10 @@ TimeKeeping::Time<Scale> operator-(const TimeKeeping::Time<Scale>& l, double sec
 
 template<TimeKeeping::TimeScale Scale>
 std::ostream& operator<<(std::ostream& os, const TimeKeeping::Time<Scale>& time) noexcept;
+
+namespace TimeKeeping {
+    ;
+}
 
 #include "time-keeping.tpp"
 
