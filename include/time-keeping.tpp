@@ -2,6 +2,8 @@
 #include <string>
 
 
+
+
 namespace TimeKeeping {
     template<TimeScale Scale>
     Time<Scale> Time<Scale>::fromJD(double jd) noexcept {
@@ -10,8 +12,7 @@ namespace TimeKeeping {
 
     template<TimeScale Scale>
     Time<Scale> Time<Scale>::fromMJD(double mjd) noexcept {
-        double jd = mjd + 2400000.5;
-        return fromJD(jd);
+        return Time(std::floor(mjd) + 2400000, mjd - std::floor(mjd) + 0.5);
     }
 
     template<TimeScale Scale>
@@ -91,7 +92,9 @@ namespace TimeKeeping {
     double Time<Scale>::jd()        const noexcept {return jdInt_ + jdFrac_; }
 
     template<TimeScale Scale>
-    double Time<Scale>::mjd()       const noexcept {return jd() - 2400000.5;}
+    double Time<Scale>::mjd()       const noexcept {
+        return (jdInt() - 2400000) + (jdFrac() - 0.5);
+    }
 
 
     #include "../lib/sofa/include/sofa.h"

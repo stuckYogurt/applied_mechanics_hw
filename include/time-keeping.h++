@@ -4,6 +4,9 @@
 
 #include "ostream"
 #include <string>
+#include <cmath>
+
+#include <utils.h++>
 
 namespace TimeKeeping {
     enum class TimeScale {
@@ -24,12 +27,20 @@ namespace TimeKeeping {
         double jdInt_;
         double jdFrac_;
     public:
-        explicit Time(double jdInt = 0, double jdFrac = 0) noexcept: jdInt_(jdInt), jdFrac_(jdFrac) {
-            if (jdFrac > 1) {
-                auto whole_part = std::floor(jdFrac_);
-                jdInt_ += whole_part;
-                jdFrac_ -= whole_part;
+        explicit Time(double jdInt = 0, double jdFrac = 0) noexcept: jdInt_(0), jdFrac_(0) {
+            
+            if (jdFrac >= 1) {
+                LOG_WARNING("WARNING: jdFrac >= 1 at Time(). Integer part is to be ignored");
+                jdFrac -= std::trunc(jdFrac);
             }
+            if (isFractional(jdInt)) {
+                LOG_WARNING("WARNING: Fractional jdInt at Time(). Fractional part is to be ignored");
+                jdInt = std::trunc(jdInt);
+            }
+
+            jdInt_ = jdInt;
+            jdFrac_ = jdFrac;
+
         };
 
         Time static fromJD(double jd) noexcept;
